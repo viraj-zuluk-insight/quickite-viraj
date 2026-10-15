@@ -1,0 +1,20 @@
+config {
+  type: "incremental",
+  schema: dataform.projectConfig.vars.core_dataset,
+  name: "fct_order_items",
+  uniqueKey: ["order_id", "line_no"]
+}
+
+SELECT
+  i.order_id,
+  i.line_no,
+  i.item_name,
+  i.quantity,
+  i.unit_price,
+  i.line_total
+FROM
+  ${ref("stg_order_items")} i
+INNER JOIN
+  ${ref("fct_orders")} o ON i.order_id = o.order_id
+
+${when(incremental(), `WHERE i._source_date >= (SELECT MAX(_source_date) FROM ${self()})`)}

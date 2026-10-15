@@ -1,0 +1,24 @@
+config {
+  type: "view",
+  schema: dataform.projectConfig.vars.staging_dataset,
+  name: "stg_customers",
+  assertions: {
+    uniqueKey: ["customer_id"],
+    nonNull: ["customer_id", "email"]
+  }
+}
+
+SELECT
+  CAST(customer_id AS INT64) AS customer_id,
+  TRIM(name) AS customer_name,
+  LOWER(TRIM(email)) AS email,
+  TRIM(phone) AS phone,
+  LOWER(TRIM(city)) AS city,
+  PARSE_TIMESTAMP('%Y-%m-%d %H:%M:%S', signup_date) AS signup_timestamp,
+  PARSE_TIMESTAMP('%Y-%m-%d %H:%M:%S', updated_at) AS updated_at,
+  _source_date,
+  _ingested_at
+FROM
+  ${ref("customers")}
+WHERE
+  customer_id IS NOT NULL

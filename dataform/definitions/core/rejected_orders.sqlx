@@ -1,0 +1,27 @@
+config {
+  type: "table",
+  schema: dataform.projectConfig.vars.core_dataset,
+  name: "rejected_orders"
+}
+
+SELECT
+  o.order_id,
+  o.customer_id,
+  o.restaurant_id,
+  o.order_timestamp,
+  o.order_status,
+  CASE
+    WHEN c.customer_id IS NULL AND r.restaurant_id IS NULL THEN 'Missing Customer and Restaurant'
+    WHEN c.customer_id IS NULL THEN 'Missing Customer'
+    WHEN r.restaurant_id IS NULL THEN 'Missing Restaurant'
+    ELSE 'Unknown Orphan Record'
+  END AS rejection_reason,
+  CURRENT_TIMESTAMP() AS rejected_at
+FROM
+  ${ref("stg_orders")} o
+LEFT JOIN
+  ${ref("stg_customers")} c ON o.customer_id = c.customer_id
+LEFT JOIN
+  ${ref("stg_restaurants")} r ON o.restaurant_id = r.restaurant_id
+WHERE
+  c.customer_id IS NULL OR r.restaurant_id IS NULL

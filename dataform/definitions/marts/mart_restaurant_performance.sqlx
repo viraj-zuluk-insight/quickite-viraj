@@ -1,0 +1,23 @@
+config {
+  type: "table",
+  schema: dataform.projectConfig.vars.marts_dataset,
+  name: "mart_restaurant_performance"
+}
+
+SELECT
+  r.restaurant_id,
+  r.restaurant_name,
+  r.city,
+  r.cuisine,
+  COUNT(DISTINCT o.order_id) AS total_orders,
+  SUM(CASE WHEN o.order_status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed_orders,
+  SUM(CASE WHEN o.order_status = 'CANCELLED' THEN 1 ELSE 0 END) AS cancelled_orders,
+  SUM(CASE WHEN o.order_status = 'COMPLETED' THEN i.line_total ELSE 0 END) AS total_gross_revenue
+FROM
+  ${ref("dim_restaurants")} r
+LEFT JOIN
+  ${ref("fct_orders")} o ON r.restaurant_id = o.restaurant_id
+LEFT JOIN
+  ${ref("fct_order_items")} i ON o.order_id = i.order_id
+GROUP BY
+  1, 2, 3, 4

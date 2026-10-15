@@ -1,0 +1,22 @@
+config {
+  type: "view",
+  schema: dataform.projectConfig.vars.staging_dataset,
+  name: "stg_order_items",
+  assertions: {
+    nonNull: ["order_id", "line_no"]
+  }
+}
+
+SELECT
+  CAST(order_id AS INT64) AS order_id,
+  CAST(line_no AS INT64) AS line_no,
+  TRIM(item_name) AS item_name,
+  CAST(quantity AS INT64) AS quantity,
+  CAST(unit_price AS NUMERIC) AS unit_price,
+  CAST(quantity AS NUMERIC) * CAST(unit_price AS NUMERIC) AS line_total,
+  _source_date,
+  _ingested_at
+FROM
+  ${ref("order_items")}
+WHERE
+  order_id IS NOT NULL

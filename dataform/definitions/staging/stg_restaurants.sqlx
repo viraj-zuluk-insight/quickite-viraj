@@ -1,0 +1,26 @@
+config {
+  type: "view",
+  schema: dataform.projectConfig.vars.staging_dataset,
+  name: "stg_restaurants",
+  assertions: {
+    uniqueKey: ["restaurant_id"],
+    nonNull: ["restaurant_id", "restaurant_name"]
+  }
+}
+
+SELECT
+  CAST(restaurant_id AS INT64) AS restaurant_id,
+  TRIM(name) AS restaurant_name,
+  LOWER(TRIM(city)) AS city,
+  LOWER(TRIM(cuisine)) AS cuisine,
+  CASE
+    WHEN LOWER(TRIM(is_active)) IN ('true', '1', 'yes') THEN TRUE
+    ELSE FALSE
+  END AS is_active,
+  PARSE_DATE('%Y-%m-%d', onboarded_date) AS onboarded_date,
+  _source_date,
+  _ingested_at
+FROM
+  ${ref("restaurants")}
+WHERE
+  restaurant_id IS NOT NULL

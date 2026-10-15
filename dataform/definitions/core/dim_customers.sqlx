@@ -1,0 +1,19 @@
+config {
+  type: "incremental",
+  schema: dataform.projectConfig.vars.core_dataset,
+  name: "dim_customers",
+  uniqueKey: ["customer_id"]
+}
+
+SELECT
+  customer_id,
+  customer_name,
+  email,
+  phone,
+  city,
+  signup_timestamp,
+  updated_at
+FROM
+  ${ref("stg_customers")}
+
+${when(incremental(), `WHERE updated_at > (SELECT MAX(updated_at) FROM ${self()})`)}

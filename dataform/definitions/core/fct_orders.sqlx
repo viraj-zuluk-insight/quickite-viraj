@@ -1,0 +1,26 @@
+config {
+  type: "incremental",
+  schema: dataform.projectConfig.vars.core_dataset,
+  name: "fct_orders",
+  uniqueKey: ["order_id"],
+  bigquery: {
+    partitionBy: "DATE(order_timestamp)"
+  }
+}
+
+SELECT
+  o.order_id,
+  o.customer_id,
+  o.restaurant_id,
+  o.order_timestamp,
+  o.order_status,
+  o.payment_method,
+  o.updated_at
+FROM
+  ${ref("stg_orders")} o
+INNER JOIN
+  ${ref("stg_customers")} c ON o.customer_id = c.customer_id
+INNER JOIN
+  ${ref("stg_restaurants")} r ON o.restaurant_id = r.restaurant_id
+
+${when(incremental(), `WHERE o.updated_at > (SELECT MAX(updated_at) FROM ${self()})`)}

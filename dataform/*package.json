@@ -1,0 +1,6 @@
+{
+  "name": "viraj-quickbite",
+  "dependencies": {
+    "@dataform/core": "3.0.0-beta.2"
+  }
+}

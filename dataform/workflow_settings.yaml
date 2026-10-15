@@ -1,0 +1,9 @@
+defaultProject: sada-seed-2025-sandbox
+defaultLocation: us-central1
+defaultDataset: vzuluk_raw
+vars:
+  gcp_project: "sada-seed-2025-sandbox"
+  raw_dataset: "vzuluk_raw"
+  staging_dataset: "vzuluk_staging"
+  core_dataset: "vzuluk_core"
+  marts_dataset: "vzuluk_marts"

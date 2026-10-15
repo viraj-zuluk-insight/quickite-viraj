@@ -1,0 +1,6 @@
+config {
+  type: "declaration",
+  database: dataform.projectConfig.vars.gcp_project,
+  schema: dataform.projectConfig.vars.raw_dataset,
+  name: "restaurants"
+}

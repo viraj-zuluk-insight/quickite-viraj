@@ -1,0 +1,15 @@
+config {
+  type: "table",
+  schema: dataform.projectConfig.vars.core_dataset,
+  name: "dim_restaurants"
+}
+
+SELECT
+  restaurant_id,
+  restaurant_name,
+  city,
+  cuisine,
+  is_active,
+  onboarded_date
+FROM
+  ${ref("stg_restaurants")}

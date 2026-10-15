@@ -1,0 +1,22 @@
+config {
+  type: "table",
+  schema: dataform.projectConfig.vars.marts_dataset,
+  name: "mart_customer_summary"
+}
+
+SELECT
+  c.customer_id,
+  c.customer_name,
+  c.email,
+  c.city,
+  COUNT(DISTINCT o.order_id) AS lifetime_orders,
+  SUM(CASE WHEN o.order_status = 'COMPLETED' THEN i.line_total ELSE 0 END) AS lifetime_spend,
+  MAX(o.order_timestamp) AS last_order_timestamp
+FROM
+  ${ref("dim_customers")} c
+LEFT JOIN
+  ${ref("fct_orders")} o ON c.customer_id = o.customer_id
+LEFT JOIN
+  ${ref("fct_order_items")} i ON o.order_id = i.order_id
+GROUP BY
+  1, 2, 3, 4
